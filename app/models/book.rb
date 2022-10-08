@@ -3,6 +3,9 @@ class Book < ApplicationRecord
 
   belongs_to :user
   has_many :favorites, dependent: :destroy
+
+  has_many :favorited_users, through: :favorites, source: :user
+
   has_many :book_comments, dependent: :destroy
 
   validates :title, presence:true
@@ -10,6 +13,10 @@ class Book < ApplicationRecord
 
   def favorited_by?(user)
     favorites.exists?(user_id: user.id)
+  end
+
+  def self.last_week #メソッド名は自由  
+    Book.joins(:favorites).where(favorites: { created_at: 0.days.ago.prev_week..0.days.ago.prev_week(:sunday)}).group(:id).order("count(book_id) desc")
   end
 
   #検索方法分岐
