@@ -8,11 +8,8 @@ class BooksController < ApplicationController
     @book_comment = BookComment.new
   end
 
-  def index
-    #@books = Book.find(Favorite.group(:book_id).where(created_at: Time.current.all_week).order('count(book_id) desc').pluck(:book_id))
-    @books = Book.includes(:favorited_users).sort {|a,b| b.favorited_users.size <=> a.favorited_users.size}
-    #@books = Book.last_week
-
+  def index                                                      #0.days.ago.prev_week..0.days.ago.prev_week(:sunday)
+    @books = Book.find(Favorite.group(:book_id).where(created_at: Time.current.all_week).order('count(book_id) desc').pluck(:book_id))
     #@books = Book.all
     @book = Book.new
   end
