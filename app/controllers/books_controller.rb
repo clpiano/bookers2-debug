@@ -6,10 +6,14 @@ class BooksController < ApplicationController
     @book = Book.find(params[:id])
     @user = @book.user
     @book_comment = BookComment.new
+    @book_detail = Book.find(params[:id])
+    unless ViewCount.find_by(user_id: current_user.id, book_id: @book_detail.id)
+      current_user.view_counts.create(book_id: @book_detail.id)
+    end
   end
 
-  def index                                                      #0.days.ago.prev_week..0.days.ago.prev_week(:sunday)
-    @books = Book.find(Favorite.group(:book_id).where(created_at: Time.current.all_week).order('count(book_id) desc').pluck(:book_id))
+  def index                                                      #Time.current.all_week
+    @books = Book.find(Favorite.group(:book_id).where(created_at: 0.days.ago.prev_week..0.days.ago.prev_week(:sunday)).order('count(book_id) desc').pluck(:book_id))
     #@books = Book.all
     @book = Book.new
   end
